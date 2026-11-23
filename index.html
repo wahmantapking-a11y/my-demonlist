@@ -227,5 +227,20 @@ function renderLevels() {
 renderLevels();
 </script>
 
+
+<!-- Supabase Connection -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL = "MASUKKAN_PROJECT_URL";
+  const SUPABASE_KEY = "MASUKKAN_PUBLISHABLE_KEY";
+
+  const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  console.log("KCT Demonlist connected to Supabase!");
+</script>
 </body>
 </html>
