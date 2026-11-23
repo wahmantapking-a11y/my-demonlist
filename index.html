@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KCT Demonlist</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #101116;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  background: #191b23;
+  padding: 22px 16px;
+  border-bottom: 1px solid #30333e;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 27px;
+  color: #ffffff;
+}
+
+header p {
+  color: #999eac;
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+nav {
+  display: flex;
+  overflow-x: auto;
+  background: #191b23;
+  border-bottom: 1px solid #30333e;
+}
+
+nav button {
+  flex: 1;
+  min-width: 95px;
+  padding: 16px 10px;
+  background: none;
+  border: none;
+  color: #aeb2c0;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+nav button.active {
+  color: white;
+  border-bottom: 3px solid #8d74ff;
+}
+
+.container {
+  padding: 18px;
+  max-width: 850px;
+  margin: auto;
+}
+
+h2 {
+  font-size: 22px;
+}
+
+.search {
+  width: 100%;
+  padding: 13px;
+  background: #1d2029;
+  border: 1px solid #383c49;
+  border-radius: 8px;
+  color: white;
+  margin: 10px 0 18px;
+  font-size: 15px;
+}
+
+.level {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #1b1e27;
+  border: 1px solid #303440;
+  border-radius: 9px;
+}
+
+.rank {
+  font-size: 20px;
+  font-weight: bold;
+  min-width: 32px;
+  color: #a995ff;
+}
+
+.thumbnail {
+  width: 65px;
+  height: 55px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #39305e, #171b35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.info h3 {
+  margin: 0 0 5px;
+  font-size: 15px;
+}
+
+.info p {
+  margin: 0;
+  font-size: 12px;
+  color: #999eac;
+}
+
+footer {
+  text-align: center;
+  padding: 30px 10px;
+  color: #777d8b;
+  font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>KCT Demonlist</h1>
+  <p>GEOMETRY DASH COMMUNITY DEMONLIST</p>
+</header>
+
+<nav>
+  <button class="active" onclick="showList('Main',this)">Main</button>
+  <button onclick="showList('Extended',this)">Extended</button>
+  <button onclick="showList('Legacy',this)">Legacy</button>
+</nav>
+
+<main class="container">
+  <h2 id="listTitle">Main List</h2>
+
+  <input
+    class="search"
+    id="search"
+    placeholder="Search levels..."
+    oninput="renderLevels()"
+  >
+
+  <div id="levels"></div>
+</main>
+
+<footer>
+  KCT Demonlist © 2026
+  <br><br>
+  Not affiliated with RobTop Games.
+</footer>
+
+<script>
+const lists = {
+  Main: [
+    {name:"Example Level 1", creator:"Creator 1"},
+    {name:"Example Level 2", creator:"Creator 2"},
+    {name:"Example Level 3", creator:"Creator 3"}
+  ],
+
+  Extended: [
+    {name:"Example Level 4", creator:"Creator 4"},
+    {name:"Example Level 5", creator:"Creator 5"}
+  ],
+
+  Legacy: [
+    {name:"Example Level 6", creator:"Creator 6"}
+  ]
+};
+
+let currentList = "Main";
+
+function showList(name, button) {
+  currentList = name;
+
+  document.querySelectorAll("nav button")
+    .forEach(btn => btn.classList.remove("active"));
+
+  button.classList.add("active");
+
+  document.getElementById("listTitle").textContent =
+    name + " List";
+
+  document.getElementById("search").value = "";
+
+  renderLevels();
+}
+
+function renderLevels() {
+  const search = document.getElementById("search")
+    .value.toLowerCase();
+
+  const levels = lists[currentList].filter(level =>
+    level.name.toLowerCase().includes(search) ||
+    level.creator.toLowerCase().includes(search)
+  );
+
+  document.getElementById("levels").innerHTML =
+    levels.map((level, index) => `
+      <div class="level">
+        <div class="rank">#${index + 1}</div>
+        <div class="thumbnail">◆</div>
+        <div class="info">
+          <h3>${level.name}</h3>
+          <p>By ${level.creator}</p>
+        </div>
+      </div>
+    `).join("") || "<p>No levels found.</p>";
+}
+
+renderLevels();
+</script>
+
+</body>
+</html>
