@@ -168,23 +168,22 @@ footer {
 
 <script>
 const lists = {
-  Main: [
-    {name:"Example Level 1", creator:"Creator 1"},
-    {name:"Example Level 2", creator:"Creator 2"},
-    {name:"Example Level 3", creator:"Creator 3"}
-  ],
-
-  Extended: [
-    {name:"Example Level 4", creator:"Creator 4"},
-    {name:"Example Level 5", creator:"Creator 5"}
-  ],
-
-  Legacy: [
-    {name:"Example Level 6", creator:"Creator 6"}
-  ]
+  Main: [],
+  Extended: [],
+  Legacy: []
 };
 
 let currentList = "Main";
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[char]));
+}
 
 function showList(name, button) {
   currentList = name;
@@ -207,25 +206,47 @@ function renderLevels() {
     .value.toLowerCase();
 
   const levels = lists[currentList].filter(level =>
-    level.name.toLowerCase().includes(search) ||
-    level.creator.toLowerCase().includes(search)
+    (level.name || "").toLowerCase().includes(search) ||
+    (level.creator || "").toLowerCase().includes(search)
   );
 
   document.getElementById("levels").innerHTML =
     levels.map((level, index) => `
       <div class="level">
-        <div class="rank">#${index + 1}</div>
+        <div class="rank">#${level.rank ?? index + 1}</div>
         <div class="thumbnail">◆</div>
         <div class="info">
-          <h3>${level.name}</h3>
-          <p>By ${level.creator}</p>
+          <h3>${escapeHTML(level.name)}</h3>
+          <p>By ${escapeHTML(level.creator || "Unknown")}</p>
         </div>
       </div>
     `).join("") || "<p>No levels found.</p>";
 }
 
+async function loadLevels() {
+  const { data, error } = await db
+    .from("ranked_levels")
+    .select("name, creator, list_type, rank")
+    .order("rank", { ascending: true });
+
+  if (error) {
+    console.error("Supabase error:", error);
+    document.getElementById("levels").innerHTML =
+      "<p>Failed to load levels.</p>";
+    return;
+  }
+
+  lists.Main = data.filter(level => level.list_type === "Main");
+  lists.Extended = data.filter(level => level.list_type === "Extended");
+  lists.Legacy = data.filter(level => level.list_type === "Legacy");
+
+  renderLevels();
+}
+
 renderLevels();
 </script>
+
+
 
 
 <!-- Supabase Connection -->
@@ -239,6 +260,7 @@ renderLevels();
     SUPABASE_URL,
     SUPABASE_KEY
   );
+  loadLevels()
 
   console.log("KCT Demonlist connected to Supabase!");
 </script>
